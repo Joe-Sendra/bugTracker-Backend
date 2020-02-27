@@ -13,6 +13,20 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/:id', async (req, res, next) => {
+  const issueId = req.params.id;
+  try {
+    if (issueId) {
+      const entry = await IssueEntry.findOne({ _id: issueId });
+      res.json(entry);
+    } else {
+      throw new Error('Invalid issue ID submitted');
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/', async (req, res, next) => {
   try {
     const issueEntry = new IssueEntry(req.body);
