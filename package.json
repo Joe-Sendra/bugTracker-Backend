@@ -7,7 +7,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "lint": "eslint src/",
-    "test": "mocha src/*.test.js src/**/*.test.js --watch"
+    "test": "nodemon --exec \"mocha src/*.test.js src/**/*.test.js\""
   },
   "keywords": [],
   "author": "",
