@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { expect } = require('chai');
+const { expect, assert } = require('chai');
 require('chai').should();
 
 // eslint-disable-next-line no-unused-vars
@@ -12,10 +12,67 @@ describe('Issues - POST /api/v1/issues', () => {
       .post('/api/v1/issues')
       .expect(200);
   });
-  xit('should require project, type, status, priority, and summary', async () => {
-    const response = await request(app)
+  it('should require a project', () => {
+    return request(app)
       .post('/api/v1/issues')
-      .expect(422);
+      .send({ })
+      .expect(422)
+      .then((response) => {
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('"project" is required');
+      });
+  });
+  it('should require a type', () => {
+    return request(app)
+      .post('/api/v1/issues')
+      .send({ project: 'fakeProject' })
+      .expect(422)
+      .then((response) => {
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('"type" is required');
+      });
+  });
+  it('should require a status', () => {
+    return request(app)
+      .post('/api/v1/issues')
+      .send({
+        project: 'fakeProject',
+        type: 'fakeType',
+      })
+      .expect(422)
+      .then((response) => {
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('"status" is required');
+      });
+  });
+  it('should require a priority', () => {
+    return request(app)
+      .post('/api/v1/issues')
+      .send({
+        project: 'fakeProject',
+        type: 'fakeType',
+        status: 'fakeStatus',
+      })
+      .expect(422)
+      .then((response) => {
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('"priority" is required');
+      });
+  });
+  it('should require a summary', () => {
+    return request(app)
+      .post('/api/v1/issues')
+      .send({
+        project: 'fakeProject',
+        type: 'fakeType',
+        status: 'fakeStatus',
+        priority: 'fakePriority',
+      })
+      .expect(422)
+      .then((response) => {
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('"summary" is required');
+      });
   });
   xit('should respond with the created issue', async () => {
     const response = await request(app)

@@ -10,7 +10,9 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(morgan('common')); // logs requests
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('common')); // logs requests
+}
 app.use(helmet()); // blocks some headers and adds others
 app.use(cors({
   origin: process.env.CORS_ORIGIN,

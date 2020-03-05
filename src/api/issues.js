@@ -16,12 +16,19 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const issueEntry = new IssueEntry(req.body);
+    await issueEntry.validate((err) => {
+      if (err) {
+        res.status(422);
+        if (err.errors.project) { next(new Error(err.errors.project.message)); }
+        if (err.errors.type) { next(new Error(err.errors.type.message)); }
+        if (err.errors.status) { next(new Error(err.errors.status.message)); }
+        if (err.errors.priority) { next(new Error(err.errors.priority.message)); }
+        if (err.errors.summary) { next(new Error(err.errors.summary.message)); }
+      }
+    });
     const createdEntry = await issueEntry.save();
     res.json(createdEntry);
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      res.status(422);
-    }
     next(error);
   }
 });
