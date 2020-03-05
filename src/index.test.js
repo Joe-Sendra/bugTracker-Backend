@@ -1,25 +1,11 @@
 const request = require('supertest');
 const { expect } = require('chai');
-const mongoose = require('mongoose');
 
+// eslint-disable-next-line no-unused-vars
+const db = require('./db/connection');
 const app = require('./app');
 
 describe('App - GET /', () => {
-  let connection;
-
-  beforeEach((done) => {
-    connection = mongoose.createConnection(process.env.TEST_DATABASE_URL);
-    connection.once('open', () => {
-      done();
-    });
-  });
-
-  afterEach((done) => {
-    connection.close(() => {
-      done();
-    });
-  });
-
   it('should respond with a message', async () => {
     const response = await request(app)
       .get('/')
