@@ -15,6 +15,16 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
+    // Check for unknown properties
+    const keys = Object.keys(IssueEntry.schema.paths);
+    Object.keys(req.body).forEach((prop) => {
+      if (!keys.includes(prop)) {
+        res.status(422);
+        throw new Error(`Unknown property name: "${prop}"`);
+      }
+    });
+
+    // Validate received properties
     const issueEntry = new IssueEntry(req.body);
     await issueEntry.validate((err) => {
       if (err) {
@@ -51,7 +61,7 @@ router.get('/:id', async (req, res, next) => {
 router.patch('/:id', async (req, res, next) => {
   const issueId = req.params.id;
   try {
-    // TODO validate req.body against schema
+    // TODO validate req.body against schema (refactor using POST validation logic)
     await IssueEntry.findByIdAndUpdate(issueId, req.body, { new: true }, (err, issue) => {
       if (!err) { res.status(200).json(issue); }
     }).catch((error) => {
