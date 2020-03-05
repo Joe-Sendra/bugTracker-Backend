@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+// eslint-disable-next-line no-unused-vars
+const db = require('./../db/connection');
+
 const { Schema } = mongoose;
 
 const requiredString = {
