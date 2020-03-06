@@ -16,6 +16,7 @@ const issueEntrySchema = new Schema({
   },
   status: {
     type: String,
+    enum: ['TO DO', 'IN PROGRESS', 'DONE'],
     required: [true, '"status" is required'],
   },
   priority: {

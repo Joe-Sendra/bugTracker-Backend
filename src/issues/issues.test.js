@@ -54,12 +54,26 @@ describe('Issues - POST /api/v1/issues', () => {
       expect(response.body).to.have.property('message');
       expect(response.body.message).to.equal('"status" is required');
     }));
+  it('should have a status of "TO DO", "IN PROGRESS", or "DONE"', () => request(app)
+    .post('/api/v1/issues')
+    .send({
+      project: 'fakeProjectTEST',
+      type: 'fakeType',
+      status: 'fakeStatus',
+      priority: 'fakePriority',
+      summary: 'fakeSummary',
+    })
+    .expect(422)
+    .then((response) => {
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.equal('"status" is invalid, must be "TO DO", "IN PROGRESS", or "DONE"');
+    }));
   it('should require a priority', () => request(app)
     .post('/api/v1/issues')
     .send({
       project: 'fakeProject',
       type: 'fakeType',
-      status: 'fakeStatus',
+      status: 'IN PROGRESS',
     })
     .expect(422)
     .then((response) => {
@@ -71,7 +85,7 @@ describe('Issues - POST /api/v1/issues', () => {
     .send({
       project: 'fakeProject',
       type: 'fakeType',
-      status: 'fakeStatus',
+      status: 'IN PROGRESS',
       priority: 'fakePriority',
     })
     .expect(422)
@@ -84,7 +98,7 @@ describe('Issues - POST /api/v1/issues', () => {
     .send({
       project: 'fakeProject',
       type: 'fakeType',
-      status: 'fakeStatus',
+      status: 'IN PROGRESS',
       priority: 'fakePriority',
       summary: 'fakeSummary',
     })
@@ -105,7 +119,7 @@ describe('Issues - POST /api/v1/issues', () => {
     .send({
       project: 'fakeProjectTEST',
       type: 'fakeType',
-      status: 'fakeStatus',
+      status: 'IN PROGRESS',
       priority: 'fakePriority',
       summary: 'fakeSummary',
     })
@@ -134,7 +148,7 @@ describe('Issues - GET /api/v1/issues', () => {
       .send({
         project: 'fakeProject1',
         type: 'fakeType',
-        status: 'fakeStatus',
+        status: 'IN PROGRESS',
         priority: 'fakePriority',
         summary: 'fakeSummary',
       })
@@ -144,7 +158,7 @@ describe('Issues - GET /api/v1/issues', () => {
       .send({
         project: 'fakeProject2',
         type: 'fakeType',
-        status: 'fakeStatus',
+        status: 'IN PROGRESS',
         priority: 'fakePriority',
         summary: 'fakeSummary',
       })
@@ -154,7 +168,7 @@ describe('Issues - GET /api/v1/issues', () => {
       .send({
         project: 'fakeProject3',
         type: 'fakeType',
-        status: 'fakeStatus',
+        status: 'IN PROGRESS',
         priority: 'fakePriority',
         summary: 'fakeSummary',
       })
@@ -180,7 +194,7 @@ describe('Issues - GET /api/v1/issues/:id', () => {
       .send({
         project: 'fakeProject',
         type: 'fakeType',
-        status: 'fakeStatus',
+        status: 'IN PROGRESS',
         priority: 'fakePriority',
         summary: 'fakeSummary next check by using a GET request with the id',
         description: 'This is for a GET by id test',
@@ -230,7 +244,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
       .send({
         project: 'fakeProject',
         type: 'fakeType',
-        status: 'fakeStatus',
+        status: 'IN PROGRESS',
         priority: 'fakePriority',
         summary: 'fakeSummary next test a patch update',
         description: 'This is for testing a patch for id',
@@ -276,7 +290,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
       .send({
         project: 'testProject',
         type: 'fakeType',
-        status: 'fakeStatus',
+        status: 'IN PROGRESS',
         priority: 'fakePriority',
         summary: 'fakeSummary next test a patch update for project',
         description: 'This is for testing a patch for project',
@@ -298,12 +312,12 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
     return request(app)
       .patch(`/api/v1/issues/${newIssue.id}`)
       .send({
-        status: 'in-process',
+        status: 'IN PROGRESS',
         priority: 'high',
       })
       .expect(200)
       .then((response) => {
-        expect(response.body.status).to.equal('in-process');
+        expect(response.body.status).to.equal('IN PROGRESS');
         expect(response.body.priority).to.equal('high');
       });
   });
@@ -313,7 +327,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
       .patch(`/api/v1/issues/${newIssue.id}`)
       .send({
         type: 'bug',
-        status: 'Done',
+        status: 'DONE',
         summary: 'test new issue received',
       })
       .expect(200)
@@ -328,7 +342,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
         expect(response.body).to.have.property('updatedAt');
         expect(response.body).to.have.property('__v');
         expect(response.body.type).to.equal('bug');
-        expect(response.body.status).to.equal('Done');
+        expect(response.body.status).to.equal('DONE');
         expect(response.body.summary).to.equal('test new issue received');
       });
   });
@@ -345,7 +359,7 @@ describe('Issues - DELETE /api/v1/issues/:id', () => {
       .send({
         project: 'deleteMeProject',
         type: 'fakeType',
-        status: 'fakeStatus',
+        status: 'IN PROGRESS',
         priority: 'fakePriority',
         summary: 'fakeSummary',
         description: 'This is for a DELETE by id test',
