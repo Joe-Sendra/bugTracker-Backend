@@ -38,7 +38,6 @@ async function validateIssue(req, res, next) {
         if (err.errors.project) { next(new Error(err.errors.project.message)); }
         if (err.errors.type) { next(new Error(err.errors.type.message)); }
         if (err.errors.status) {
-          // console.log('STATUS ERROR ************** ', err.errors.status.kind);
           if (err.errors.status.kind === 'enum') {
             next(new Error('"status" is invalid, must be "TO DO", "IN PROGRESS", or "DONE"'));
           }
