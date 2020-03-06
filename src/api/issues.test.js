@@ -268,7 +268,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
         expect(response.body.message).to.equal('Can not update issue');
       });
   });
-  it('should not allow createdAt to be updated', async () => {    
+  xit('should not allow createdAt to be updated', async () => {    
     const newIssue = await Issue.findOne({ project: 'fakeProject' });
     return request(app)
       .patch(`/api/v1/issues/${newIssue.id}`)
@@ -279,7 +279,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
         expect(response.body.message).to.equal('Property name "createdAt" can not be manually updated');
       });
   });
-  it('should not updatedAt to be updated', async () => {
+  xit('should not updatedAt to be updated', async () => {
     const newIssue = await Issue.findOne({ project: 'fakeProject' });
     return request(app)
       .patch(`/api/v1/issues/${newIssue.id}`)
@@ -382,13 +382,5 @@ describe('Issues - DELETE /api/v1/issues/:id', () => {
       });
     const result = await Issue.findById(newIssueID);
     expect(result).to.be.a('null');
-  });
-  it('should not delete an issue', async () => {
-    await request(app)
-      .delete('/api/v1/issues/5e61bb6c16f552401c22bf98')
-      .expect(422)
-      .then((response) => {
-        expect(response.body.message).to.equal('Can not delete issue');
-      });
   });
 });
