@@ -62,9 +62,10 @@ router.patch(
 router.delete('/:id', middleware.isValidIdFormat, async (req, res, next) => {
   const issueId = req.params.id;
   try {
-    const entry = await IssueEntry.findOne({ _id: issueId });
-    if (entry) {
-      entry.remove();
+    const result = await IssueEntry.deleteOne({ _id: issueId });
+    if (result.deletedCount === 0) {
+      res.status(422);
+      throw new Error('Can not delete issue');
     }
     res.status(204);
     res.json();
