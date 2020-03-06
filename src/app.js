@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const middlewares = require('./middlewares');
-const issues = require('./api/issues');
+const issues = require('./issues/issues.routes');
 
 require('dotenv').config();
 

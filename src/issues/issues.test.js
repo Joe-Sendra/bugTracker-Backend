@@ -3,9 +3,9 @@ const { expect } = require('chai');
 require('chai').should();
 
 // eslint-disable-next-line no-unused-vars
-const db = require('./../db/connection');
+const db = require('../db/connection');
 const Issue = require('./../models/issueEntry');
-const app = require('./../app');
+const app = require('../app');
 
 describe('Issues - POST /api/v1/issues', () => {
 // Cleans up database between each test
