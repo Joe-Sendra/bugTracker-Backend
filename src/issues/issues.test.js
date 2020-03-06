@@ -4,7 +4,7 @@ require('chai').should();
 
 // eslint-disable-next-line no-unused-vars
 const db = require('../db/connection');
-const Issue = require('./../models/issueEntry');
+const Issue = require('./../issues/issues.model');
 const app = require('../app');
 
 describe('Issues - POST /api/v1/issues', () => {

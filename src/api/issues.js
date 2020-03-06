@@ -1,7 +1,7 @@
 const { Router } = require('express');
 
-const IssueEntry = require('./issues.model');
-const middleware = require('./issues.middlewares');
+const IssueEntry = require('../issues/issues.model');
+const middleware = require('../issues/issues.middlewares');
 
 const router = Router();
 
