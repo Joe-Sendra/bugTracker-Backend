@@ -268,7 +268,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
         expect(response.body.message).to.equal('Can not update issue');
       });
   });
-  xit('should not allow createdAt to be updated', async () => {    
+  it('should not allow createdAt to be updated', async () => {    
     const newIssue = await Issue.findOne({ project: 'fakeProject' });
     return request(app)
       .patch(`/api/v1/issues/${newIssue.id}`)
@@ -279,7 +279,7 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
         expect(response.body.message).to.equal('Property name "createdAt" can not be manually updated');
       });
   });
-  xit('should not updatedAt to be updated', async () => {
+  it('should not updatedAt to be updated', async () => {
     const newIssue = await Issue.findOne({ project: 'fakeProject' });
     return request(app)
       .patch(`/api/v1/issues/${newIssue.id}`)

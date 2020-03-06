@@ -14,6 +14,10 @@ async function checkProperties(req, res, next) {
     // Check for unknown properties
     const keys = Object.keys(IssueEntry.schema.paths);
     Object.keys(req.body).forEach((prop) => {
+      if (prop === 'createdAt' || prop === 'updatedAt') {
+        res.status(422);
+        throw new Error(`Property name "${prop}" can not be manually updated`);
+      }
       if (!keys.includes(prop)) {
         res.status(422);
         throw new Error(`Unknown property name: "${prop}"`);
