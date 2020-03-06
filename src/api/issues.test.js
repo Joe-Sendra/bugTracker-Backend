@@ -383,4 +383,12 @@ describe('Issues - DELETE /api/v1/issues/:id', () => {
     const result = await Issue.findById(newIssueID);
     expect(result).to.be.a('null');
   });
+  it('should not delete an issue', async () => {
+    await request(app)
+      .delete('/api/v1/issues/5e61bb6c16f552401c22bf98')
+      .expect(422)
+      .then((response) => {
+        expect(response.body.message).to.equal('Can not delete issue');
+      });
+  });
 });
