@@ -49,6 +49,7 @@ router.patch(
     try {
       await IssueEntry.findByIdAndUpdate(issueId, req.body, { new: true }, (err, issue) => {
         if (!err) { res.status(200).json(issue); }
+      // eslint-disable-next-line no-unused-vars
       }).catch((error) => {
         res.status(422);
         throw new Error('Can not update issue');
