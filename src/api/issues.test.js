@@ -238,40 +238,40 @@ describe('Issues - GET /api/v1/issues/:id', () => {
   });
 });
 
-describe('Issues - PATCH /api/v1/issues/:id', () => {
-  xit('should not allow _id to be updated', async () => {
+xdescribe('Issues - PATCH /api/v1/issues/:id', () => {
+  it('should not allow _id to be updated', async () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
   });
-  xit('should not allow createdAt to be updated', async () => {
+  it('should not allow createdAt to be updated', async () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
   });
-  xit('should not updatedAt to be updated', async () => {
+  it('should not updatedAt to be updated', async () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
   });
-  xit('should update project', async () => {
+  it('should update project', async () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
   });
-  xit('should update status and priority', async () => {
+  it('should update status and priority', async () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
   });
-  xit('should respond with the updated issue', async () => {
+  it('should respond with the updated issue', async () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
   });
 });
 
-xdescribe('Issues - DELETE /api/v1/issues/:id', () => {
+describe('Issues - DELETE /api/v1/issues/:id', () => {
   // Cleans up database between each test
   afterEach(async () => {
     await Issue.deleteMany();
@@ -295,16 +295,9 @@ xdescribe('Issues - DELETE /api/v1/issues/:id', () => {
       .delete(`/api/v1/issues/${newIssue.id}`)
       .expect(204)
       .then((response) => {
-        expect(response.body).to.equal('HOW DO I TEST FOR NO CONTENT');
+        expect(response.body).to.deep.equal({});
       });
     const result = await Issue.findById(newIssueID);
-    expect(result).to.equal('WHAT?');
-  });
-  xit('should respond with status 204 No Content', async () => {
-    const response = await request(app)
-      .delete('/api/v1/issues/:id')
-      .expect(204);
-    expect(response.body).to.have.property('message');
-    expect(response.body.message).to.equal('issue successfully deleted');
+    expect(result).to.be.a('null');
   });
 });
