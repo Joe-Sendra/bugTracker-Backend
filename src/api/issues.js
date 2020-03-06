@@ -4,6 +4,10 @@ const IssueEntry = require('../models/issueEntry');
 
 const router = Router();
 
+function isValidIdFormat(id) {
+  return new RegExp('^[0-9a-fA-F]{24}$').test(id);
+}
+
 router.get('/', async (req, res, next) => {
   try {
     const entries = await IssueEntry.find();
@@ -47,9 +51,7 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   const issueId = req.params.id;
   try {
-
-    const isValidIdFormat = new RegExp('^[0-9a-fA-F]{24}$').test(issueId);
-    if (isValidIdFormat) {
+    if (isValidIdFormat(issueId)) {
       const entry = await IssueEntry.findOne({ _id: issueId });
       if (entry) {
         res.json(entry);
@@ -84,10 +86,13 @@ router.patch('/:id', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   const issueId = req.params.id;
   try {
-    if (issueId) {
+    if (isValidIdFormat(issueId)) {
       const entry = await IssueEntry.findOne({ _id: issueId });
-      
-      res.json(entry);
+      if (entry) {
+        entry.remove();
+      }
+      res.status(204);
+      res.json();
     } else {
       throw new Error('Invalid issue ID submitted');
     }
