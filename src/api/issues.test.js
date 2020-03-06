@@ -115,7 +115,7 @@ describe('Issues - POST /api/v1/issues', () => {
       });
   });
   it('should save an issue to the database', async () => {
-    const response = await request(app)
+    return request(app)
       .post('/api/v1/issues')
       .send({
         project: 'fakeProjectTEST',
@@ -126,7 +126,7 @@ describe('Issues - POST /api/v1/issues', () => {
       })
       .expect(200)
       .then(async () => {
-        const issue = await Issue.findOne({ project: 'fakeProjectTEST'});
+        const issue = await Issue.findOne({ project: 'fakeProjectTEST' });
         expect(issue.project).to.equal('fakeProjectTEST');
         expect(issue).to.have.property('_id');
       });
@@ -134,6 +134,10 @@ describe('Issues - POST /api/v1/issues', () => {
 });
 
 describe('Issues - GET /api/v1/issues', () => {
+  // Cleans up database between each test
+  beforeEach(async () => {
+    await Issue.deleteMany();
+  });
   it('should respond with an array', () => {
     return request(app)
       .get('/api/v1/issues')
@@ -186,24 +190,51 @@ describe('Issues - GET /api/v1/issues', () => {
 });
 
 describe('Issues - GET /api/v1/issues/:id', () => {
-  xit('should respond with an issue object', async () => {
-    const response = await request(app)
-      .get('/api/v1/issues/12345')
-      .expect(200);
-    expect(response.body).to.have.property('_id');
-    expect(response.body).to.have.property('project');
-    expect(response.body).to.have.property('type');
-    expect(response.body).to.have.property('status');
-    expect(response.body).to.have.property('priority');
-    expect(response.body).to.have.property('summary');
-    expect(response.body).to.have.property('createdAt');
-    expect(response.body).to.have.property('updatedAt');
-    expect(response.body).to.have.property('description');
+  // Cleans up database between each test
+  afterEach(async () => {
+    await Issue.deleteMany();
   });
-  xit('should respond with 3 issues', async () => {
-    const response = await request(app)
-      .get('/api/v1/issues')
+  it('should respond with an issue object', async () => {
+    await request(app)
+      .post('/api/v1/issues')
+      .send({
+        project: 'fakeProject',
+        type: 'fakeType',
+        status: 'fakeStatus',
+        priority: 'fakePriority',
+        summary: 'fakeSummary next check by using a GET request with the id',
+        description: 'This is for a GET by id test',
+      })
       .expect(200);
+    const newIssue = await Issue.findOne({ project: 'fakeProject' });
+    return request(app)
+      .get(`/api/v1/issues/${newIssue.id}`)
+      .then((response) => {
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.have.property('project');
+        expect(response.body).to.have.property('type');
+        expect(response.body).to.have.property('status');
+        expect(response.body).to.have.property('priority');
+        expect(response.body).to.have.property('summary');
+        expect(response.body).to.have.property('description');
+        expect(response.body).to.have.property('createdAt');
+        expect(response.body).to.have.property('updatedAt');
+        expect(response.body).to.have.property('__v');
+      });
+  });
+  it('should respond with 404 status', async () => {
+    await request(app)
+      .get('/api/v1/issues/5e61bb6c16f552401c22bf98')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).to.equal('Invalid issue ID submitted');
+      });
+    request(app)
+      .get('/api/v1/issues/notAvalidID')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).to.equal('Invalid issue ID submitted');
+      });
   });
 });
 
@@ -217,7 +248,8 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
-  });  xit('should not updatedAt to be updated', async () => {
+  });
+  xit('should not updatedAt to be updated', async () => {
     const response = await request(app)
       .patch('/api/v1/issues/:id')
       .expect(200);
@@ -239,15 +271,40 @@ describe('Issues - PATCH /api/v1/issues/:id', () => {
   });
 });
 
-describe('Issues - DELETE /api/v1/issues/:id', () => {
-  xit('should delete an issue', async () => {
-    const response = await request(app)
-      .get('/api/v1/issues/:id')
-      .expect(200);
+xdescribe('Issues - DELETE /api/v1/issues/:id', () => {
+  // Cleans up database between each test
+  afterEach(async () => {
+    await Issue.deleteMany();
   });
-  xit('should respond with a message', async () => {
-    const response = await request(app)
-      .get('/api/v1/issues/:id')
+  it('should delete an issue', async () => {
+    await request(app)
+      .post('/api/v1/issues')
+      .send({
+        project: 'deleteMeProject',
+        type: 'fakeType',
+        status: 'fakeStatus',
+        priority: 'fakePriority',
+        summary: 'fakeSummary',
+        description: 'This is for a DELETE by id test',
+      })
       .expect(200);
+    const newIssue = await Issue.findOne({ project: 'deleteMeProject' });
+    const newIssueID = newIssue.id;
+    expect(newIssue.project).to.equal('deleteMeProject');
+    await request(app)
+      .delete(`/api/v1/issues/${newIssue.id}`)
+      .expect(204)
+      .then((response) => {
+        expect(response.body).to.equal('HOW DO I TEST FOR NO CONTENT');
+      });
+    const result = await Issue.findById(newIssueID);
+    expect(result).to.equal('WHAT?');
+  });
+  xit('should respond with status 204 No Content', async () => {
+    const response = await request(app)
+      .delete('/api/v1/issues/:id')
+      .expect(204);
+    expect(response.body).to.have.property('message');
+    expect(response.body.message).to.equal('issue successfully deleted');
   });
 });

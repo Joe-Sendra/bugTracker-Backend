@@ -47,10 +47,18 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   const issueId = req.params.id;
   try {
-    if (issueId) {
+
+    const isValidIdFormat = new RegExp('^[0-9a-fA-F]{24}$').test(issueId);
+    if (isValidIdFormat) {
       const entry = await IssueEntry.findOne({ _id: issueId });
-      res.json(entry);
+      if (entry) {
+        res.json(entry);
+      } else {
+        res.status(404);
+        throw new Error('Invalid issue ID submitted');
+      }
     } else {
+      res.status(404);
       throw new Error('Invalid issue ID submitted');
     }
   } catch (error) {
@@ -68,6 +76,21 @@ router.patch('/:id', async (req, res, next) => {
       res.status(422);
       throw new Error('Can not update issue', error);
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/:id', async (req, res, next) => {
+  const issueId = req.params.id;
+  try {
+    if (issueId) {
+      const entry = await IssueEntry.findOne({ _id: issueId });
+      
+      res.json(entry);
+    } else {
+      throw new Error('Invalid issue ID submitted');
+    }
   } catch (error) {
     next(error);
   }
