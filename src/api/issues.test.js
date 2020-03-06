@@ -238,36 +238,119 @@ describe('Issues - GET /api/v1/issues/:id', () => {
   });
 });
 
-xdescribe('Issues - PATCH /api/v1/issues/:id', () => {
+describe('Issues - PATCH /api/v1/issues/:id', () => {
+  // Cleans up database between each test
+  afterEach(async () => {
+    await Issue.deleteMany();
+  });
+
+  beforeEach(async () => {
+    await request(app)
+      .post('/api/v1/issues')
+      .send({
+        project: 'fakeProject',
+        type: 'fakeType',
+        status: 'fakeStatus',
+        priority: 'fakePriority',
+        summary: 'fakeSummary next test a patch update',
+        description: 'This is for testing a patch for id',
+      })
+      .expect(200);
+  });
+
   it('should not allow _id to be updated', async () => {
-    const response = await request(app)
-      .patch('/api/v1/issues/:id')
-      .expect(200);
+    const newIssue = await Issue.findOne({ project: 'fakeProject' });
+    return request(app)
+      .patch(`/api/v1/issues/${newIssue.id}`)
+      .send({ _id: '5e61bb6c16f552401c22bf98' })
+      .expect(422)
+      .then((response) => {
+        expect(response.body.message).to.equal('Can not update issue');
+      });
   });
-  it('should not allow createdAt to be updated', async () => {
-    const response = await request(app)
-      .patch('/api/v1/issues/:id')
-      .expect(200);
+  xit('should not allow createdAt to be updated', async () => {    
+    const newIssue = await Issue.findOne({ project: 'fakeProject' });
+    return request(app)
+      .patch(`/api/v1/issues/${newIssue.id}`)
+      .send({ createdAt: '' })
+      .expect(422)
+      .then((response) => {
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('Property name "createdAt" can not be manually updated');
+      });
   });
-  it('should not updatedAt to be updated', async () => {
-    const response = await request(app)
-      .patch('/api/v1/issues/:id')
-      .expect(200);
+  xit('should not updatedAt to be updated', async () => {
+    const newIssue = await Issue.findOne({ project: 'fakeProject' });
+    return request(app)
+      .patch(`/api/v1/issues/${newIssue.id}`)
+      .send({ updatedAt: '' })
+      .expect(422)
+      .then((response) => {
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('Property name "updatedAt" can not be manually updated');
+      });
   });
   it('should update project', async () => {
-    const response = await request(app)
-      .patch('/api/v1/issues/:id')
+    await request(app)
+      .post('/api/v1/issues')
+      .send({
+        project: 'testProject',
+        type: 'fakeType',
+        status: 'fakeStatus',
+        priority: 'fakePriority',
+        summary: 'fakeSummary next test a patch update for project',
+        description: 'This is for testing a patch for project',
+      })
       .expect(200);
+    const newIssue = await Issue.findOne({ project: 'testProject' });
+    return request(app)
+      .patch(`/api/v1/issues/${newIssue.id}`)
+      .send({
+        project: 'renamedProject',
+      })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.project).to.equal('renamedProject');
+      });
   });
   it('should update status and priority', async () => {
-    const response = await request(app)
-      .patch('/api/v1/issues/:id')
-      .expect(200);
+    const newIssue = await Issue.findOne({ project: 'fakeProject' });
+    return request(app)
+      .patch(`/api/v1/issues/${newIssue.id}`)
+      .send({
+        status: 'in-process',
+        priority: 'high',
+      })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.status).to.equal('in-process');
+        expect(response.body.priority).to.equal('high');
+      });
   });
   it('should respond with the updated issue', async () => {
-    const response = await request(app)
-      .patch('/api/v1/issues/:id')
-      .expect(200);
+    const newIssue = await Issue.findOne({ project: 'fakeProject' });
+    return request(app)
+      .patch(`/api/v1/issues/${newIssue.id}`)
+      .send({
+        type: 'bug',
+        status: 'Done',
+        summary: 'test new issue received',
+      })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).to.have.property('_id');
+        expect(response.body).to.have.property('project');
+        expect(response.body).to.have.property('type');
+        expect(response.body).to.have.property('status');
+        expect(response.body).to.have.property('priority');
+        expect(response.body).to.have.property('summary');
+        expect(response.body).to.have.property('createdAt');
+        expect(response.body).to.have.property('updatedAt');
+        expect(response.body).to.have.property('__v');
+        expect(response.body.type).to.equal('bug');
+        expect(response.body.status).to.equal('Done');
+        expect(response.body.summary).to.equal('test new issue received');
+      });
   });
 });
 
